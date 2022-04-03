@@ -21,6 +21,9 @@
             - 1 - error
             - 2 - sealed
 
+          also, check on $VAULT_ADDR, we currently have it as:
+          VAULT_ADDR="{{ lookup('ansible.builtin.env', 'VAULT_ADDR') }}"
+
 - name: ensure vault approle auth
   block:
 
@@ -118,6 +121,11 @@
             {{ role_id.stdout }}
           vault secret_id:
             {{ secret_id.stdout }}
+
+          export these as $VAULT_ROLE_ID and $VAULT_SECRET_ID
+
+          ansible/inventory.yml uses them in order to create
+          the hashivault secret lookup credential in awx
 
   rescue:
 
