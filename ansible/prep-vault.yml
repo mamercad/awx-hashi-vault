@@ -1,0 +1,10 @@
+---
+- name: prep-vault
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  become: false
+  tasks:
+    - name: include prep-vault role
+      ansible.builtin.include_role:
+        name: prep-vault

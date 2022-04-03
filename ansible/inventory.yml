@@ -1,0 +1,14 @@
+all:
+  hosts:
+    localhost:
+      connection: local
+      ansible_python_interpreter: "{{ lookup('ansible.builtin.pipe', 'which python3') }}"
+    jonagold:
+      ansible_host: 192.168.1.105
+      ansible_user: mark
+      connection: ssh
+      ansible_python_interpreter: "{{ lookup('ansible.builtin.pipe', 'which python3') }}"
+  children:
+    awx_managed:
+      hosts:
+        jonagold:

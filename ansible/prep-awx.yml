@@ -1,0 +1,10 @@
+---
+- name: prep-awx
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  become: false
+  tasks:
+    - name: include prep-awx role
+      ansible.builtin.include_role:
+        name: prep-awx
