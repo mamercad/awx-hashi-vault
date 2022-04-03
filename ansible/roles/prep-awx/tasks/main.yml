@@ -16,3 +16,23 @@
     scm_url: "{{ repo }}"
     scm_branch: "{{ branch }}"
     scm_update_on_launch: "{{ update_on_launch }}"
+
+- name: create inventory from this project
+  awx.awx.tower_inventory:
+    state: present
+    name: "{{ inventory }}"
+    description: "inventory for {{ repo }}"
+    organization: "{{ organization }}"
+
+- name: create inventory source from this project
+  awx.awx.tower_inventory_source:
+    state: present
+    name: "{{ inventory_src }}"
+    inventory: "{{ inventory }}"
+    description: "inventory source for {{ repo }}"
+    organization: "{{ organization }}"
+    overwrite: true
+    source_project: "{{ project }}"
+    source: scm
+    source_path: ansible/inventory.yml
+    update_on_launch: true
