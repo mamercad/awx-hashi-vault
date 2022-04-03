@@ -1,12 +1,12 @@
 ---
 # tasks file for prep-awx
 
-- name: create testing organization
+- name: create organization
   awx.awx.tower_organization:
     state: present
     name: "{{ organization }}"
 
-- name: create this project in awx
+- name: create project
   awx.awx.tower_project:
     state: present
     name: "{{ project }}"
@@ -17,14 +17,14 @@
     scm_branch: "{{ branch }}"
     scm_update_on_launch: "{{ update_on_launch }}"
 
-- name: create inventory from this project
+- name: create inventory
   awx.awx.tower_inventory:
     state: present
     name: "{{ inventory }}"
     description: "inventory for {{ repo }}"
     organization: "{{ organization }}"
 
-- name: create inventory source from this project
+- name: create inventory source
   awx.awx.tower_inventory_source:
     state: present
     name: "{{ inventory_src }}"
@@ -36,3 +36,20 @@
     source: scm
     source_path: ansible/inventory.yml
     update_on_launch: true
+
+- name: create hashivault lookup credential
+  awx.awx.tower_credential:
+    state: present
+    name: "{{ credential }}"
+    credential_type: HashiCorp Vault Secret Lookup
+    description: "hashicorp vault secret lookup for {{ repo }}"
+    organization: "{{ organization }}"
+    inputs:
+      api_version: "{{ vault.api_version }}"
+      cacert: "{{ vault.cacert }}"
+      default_auth_path: "{{ vault.default_auth_path }}"
+      namespace: "{{ vault.namespace }}"
+      role_id: "{{ vault.role_id }}"
+      secret_id: "{{ vault.secret_id }}"
+      url: "{{ vault.url }}"
+  no_log: true
