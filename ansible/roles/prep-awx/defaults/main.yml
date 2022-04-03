@@ -1,0 +1,8 @@
+---
+# defaults file for prep-awx
+
+organization: awx-hashi-vault-org
+project: awx-hashi-vault-repo
+repo: git@github.com:mamercad/awx-hashi-vault.git
+branch: devel
+update_on_launch: true

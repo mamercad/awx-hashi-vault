@@ -1,0 +1,8 @@
+---
+# defaults file for prep-infra
+
+sa_name: awx
+sa_comment: AWX Service Account
+sa_create_home: true
+sa_password_lock: true
+sa_shell: /bin/bash

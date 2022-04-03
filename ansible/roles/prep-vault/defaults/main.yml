@@ -1,0 +1,5 @@
+---
+# defaults file for prep-vault
+
+vault_acl_name: awx_acl
+vault_role_name: role_awx

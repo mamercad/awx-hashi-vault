@@ -1,0 +1,18 @@
+---
+# tasks file for prep-awx
+
+- name: create testing organization
+  awx.awx.tower_organization:
+    state: present
+    name: "{{ organization }}"
+
+- name: create this project in awx
+  awx.awx.tower_project:
+    state: present
+    name: "{{ project }}"
+    description: "project for {{ repo }}"
+    organization: "{{ organization }}"
+    scm_type: git
+    scm_url: "{{ repo }}"
+    scm_branch: "{{ branch }}"
+    scm_update_on_launch: "{{ update_on_launch }}"

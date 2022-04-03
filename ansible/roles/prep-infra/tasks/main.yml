@@ -1,0 +1,15 @@
+---
+# tasks file for prep-infra
+
+- name: ping
+  ansible.builtin.ping:
+
+- name: ensure awx service account exists
+  ansible.builtin.user:
+    state: present
+    name: "{{ sa_name }}"
+    comment: "{{ sa_comment }}"
+    create_home: "{{ sa_create_home }}"
+    password_lock: "{{ sa_password_lock }}"
+    shell: "{{ sa_shell }}"
+  become: true

@@ -1,0 +1,131 @@
+---
+
+- name: ensure vault is ready
+  block:
+
+    - name: ensure vault is unsealed
+      ansible.builtin.command:
+        cmd: vault status
+      register: vault_status
+
+  rescue:
+
+    - name: the command "vault status" returned nonzero
+      ansible.builtin.fail:
+        msg: |
+          "vault status" returned {{ vault_status.rc }}; perhaps check up on the section
+          named "Environment Variables" here https://www.vaultproject.io/docs/commands
+
+          The exit code reflects the seal status:
+            - 0 - unsealed
+            - 1 - error
+            - 2 - sealed
+
+- name: ensure vault approle auth
+  block:
+
+    - name: ensure vault approle auth is enabled
+      ansible.builtin.command:
+        cmd: vault auth enable approle
+      register: vault_approle
+
+  rescue:
+
+    - name: the command "vault auth enable approle" returned nonzero
+      ansible.builtin.fail:
+        msg: |
+          "vault auth enable approle" returned {{ vault_approle.rc }}; perhaps check up
+          the documentation here https://www.vaultproject.io/docs/auth/approle
+      when:
+        - vault_approle.stderr is not search("path is already in use at approle/")
+
+- name: ensure vault acl for read on vault secret/*
+  block:
+
+    - name: create a tempfile for awx acl
+      ansible.builtin.tempfile:
+        state: file
+        suffix: hcl
+      register: awx_acl
+
+    - name: create awx acl
+      ansible.builtin.copy:
+        dest: "{{ awx_acl.path }}"
+        content: |
+          path "secret/*" {
+            capabilities = [ "read" ]
+          }
+
+    - name: write (apply) awx acl
+      ansible.builtin.command:
+        cmd: vault policy write {{ vault_acl_name }} {{ awx_acl.path }}
+      register: vault_policy_write
+
+  rescue:
+
+    - name: unable to write an acl in vault
+      ansible.builtin.fail:
+        msg: |
+          reach out to your Vault administrators for help:
+          {{ vault_policy_write }}
+
+  always:
+
+    - name: clean up awx acl tempfile
+      ansible.builtin.file:
+        state: absent
+        path: "{{ awx_acl.path }}"
+
+- name: ensure vault role applied to awx acl
+  block:
+
+    - name: create awx role in vault
+      ansible.builtin.command:
+        cmd: |
+          vault write auth/approle/role/{{ vault_role_name }}
+            token_num_uses=0
+            token_ttl=0m
+            secret_id_num_uses=0
+            token_no_default_policy=false
+            token_policies="{{ vault_acl_name }}"
+      register: vault_auth_approle_write
+
+  rescue:
+
+    - name: unable to apply approle auth in vault
+      ansible.builtin.fail:
+        msg: |
+          reach out to your Vault administrators for help:
+          {{ vault_auth_approle_write }}
+
+- name: fetch role_id and secret_id
+  block:
+
+    - name: fetch vault role_id
+      ansible.builtin.command:
+        cmd: vault read auth/approle/role/{{ vault_role_name }}/role-id
+      register: role_id
+
+    - name: fetch vault secret_id
+      ansible.builtin.command:
+        cmd: vault write -f auth/approle/role/{{ vault_role_name }}/secret-id
+      register: secret_id
+
+    - name: show vault role_id and secret_id
+      ansible.builtin.debug:
+        msg: |
+          vault role_id:
+            {{ role_id.stdout }}
+          vault secret_id:
+            {{ secret_id.stdout }}
+
+  rescue:
+
+    - name: unable to fetch role_id and secret_id
+      ansible.builtin.fail:
+        msg: |
+          reach out to your Vault administrators for help:
+            role_id:
+              {{ role_id }}
+            secret_id:
+              {{ secret_id }}
