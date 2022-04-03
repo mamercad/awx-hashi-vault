@@ -1,5 +1,17 @@
 all:
   vars:
+    awx_service_account:
+      name: awx
+      group: awx
+      comment: AWX Service Account
+      create_home: true
+      home: /Users/awx
+      password_lock: false
+      shell: /bin/bash
+      password: "{{ lookup('ansible.builtin.env', 'AWX_SA_PASSWORD') }}"
+      ssh_private_key_b64: "{{ lookup('ansible.builtin.env', 'AWX_SA_SSH_PRIVATE_KEY_B64') }}"
+      ssh_public_key_b64: "{{ lookup('ansible.builtin.env', 'AWX_SA_SSH_PUBLIC_KEY_B64') }}"
+      ssh_key_passphrase: "{{ lookup('ansible.builtin.env', 'AWX_SA_SSH_PASSPHRASE') }}"
     vault:
       api_version: v1
       cacert: ""
