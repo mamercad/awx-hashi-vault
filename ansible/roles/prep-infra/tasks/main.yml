@@ -4,12 +4,40 @@
 - name: ping
   ansible.builtin.ping:
 
+- name: ensure awx service account group exists
+  ansible.builtin.group:
+    state: present
+    name: "{{ awx_service_account.group }}"
+  become: true
+
 - name: ensure awx service account exists
   ansible.builtin.user:
     state: present
-    name: "{{ sa_name }}"
-    comment: "{{ sa_comment }}"
-    create_home: "{{ sa_create_home }}"
-    password_lock: "{{ sa_password_lock }}"
-    shell: "{{ sa_shell }}"
+    name: "{{ awx_service_account.name }}"
+    group: "{{ awx_service_account.group }}"
+    home: "{{ awx_service_account.home }}"
+    comment: "{{ awx_service_account.comment }}"
+    create_home: "{{ awx_service_account.create_home }}"
+    password_lock: "{{ awx_service_account.password_lock }}"
+    shell: "{{ awx_service_account.shell }}"
   become: true
+
+- name: deploy awx ssh authorized_keys
+  when: awx_service_account.ssh_public_key_b64 is defined
+  block:
+
+    - name: ensure awx service account ~/.ssh
+      ansible.builtin.file:
+        state: directory
+        path: "{{ awx_service_account.home ~ '/.ssh' }}"
+        owner: "{{ awx_service_account.name }}"
+        group: "{{ awx_service_account.group }}"
+        mode: 0700
+      become: true
+
+    - name: ensure awx service account ~/.ssh/authorized_keys
+      ansible.posix.authorized_key:
+        state: present
+        user: "{{ awx_service_account.name }}"
+        key: "{{ awx_service_account.ssh_public_key_b64 | b64decode }}"
+      become: true

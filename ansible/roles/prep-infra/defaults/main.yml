@@ -1,8 +1,14 @@
 ---
 # defaults file for prep-infra
 
-sa_name: awx
-sa_comment: AWX Service Account
-sa_create_home: true
-sa_password_lock: true
-sa_shell: /bin/bash
+awx_service_account:
+  name: awx
+  group: awx
+  comment: AWX Service Account
+  create_home: true
+  home: /Users/awx
+  password_lock: true
+  shell: /bin/bash
+  password: hunter2
+  ssh_key_data: hunter2
+  ssh_key_unlock: hunter2
