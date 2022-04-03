@@ -3,6 +3,6 @@
 
 organization: awx-hashi-vault-org
 project: awx-hashi-vault-repo
-repo: git@github.com:mamercad/awx-hashi-vault.git
+repo: https://github.com/mamercad/awx-hashi-vault.git
 branch: devel
 update_on_launch: true
