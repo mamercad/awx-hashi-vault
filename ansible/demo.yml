@@ -1,0 +1,10 @@
+---
+- name: demo
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  become: false
+  tasks:
+    - name: include demo role
+      ansible.builtin.include_role:
+        name: demo
