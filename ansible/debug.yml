@@ -6,5 +6,9 @@
     - name: debug
       ansible.builtin.debug:
         msg: |
-          secret1: {{ secret1 }}
-          secret2: {{ secret2 }}
+          environment:
+            $SECRET1: {{ lookup('ansible.builtin.env', 'SECRET1' }}
+            $SECRET2: {{ lookup('ansible.builtin.env', 'SECRET2' }}
+          variables:
+            secret1: {{ secret1 }}
+            secret2: {{ secret2 }}
