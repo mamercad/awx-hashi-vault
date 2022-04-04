@@ -98,3 +98,22 @@
     metadata:
       secret_path: /secret/{{ awx_service_account.name }}
       secret_key: ssh_passphrase
+
+- name: update the project (pull changes)
+  when: update_before_jts | default(false, true)
+  awx.awx.tower_project_update:
+    name: "{{ project }}"
+    wait: true
+
+- name: create ping job template
+  awx.awx.tower_job_template:
+    state: present
+    name: "{{ job_template }}"
+    description: "hashicorp vault job template for {{ repo }}"
+    project: "{{ project }}"
+    organization: "{{ organization }}"
+    inventory: "{{ inventory }}"
+    playbook: ansible/ping.yml
+    credentials:
+      - "{{ machine_credential }}"
+    limit: jonagold
