@@ -22,3 +22,18 @@
   awx.awx.tower_job_launch:
     name: "{{ prep_awx.job_template_debug }}"
     wait: true
+  register: job
+
+- name: fetch job stdout
+  ansible.builtin.uri:
+    url: "{{ lookup('ansible.builtin.env', 'TOWER_HOST') ~ '/api/v2/jobs/' ~ job.id ~ '/stdout/' }}"
+    user: "{{ lookup('ansible.builtin.env', 'TOWER_USERNAME') }}"
+    password: "{{ lookup('ansible.builtin.env', 'TOWER_PASSWORD') }}"
+    force_basic_auth: true
+    return_content: true
+  register: stdout
+  no_log: true
+
+- name: show the job stdout
+  ansible.builtin.debug:
+    var: stdout
