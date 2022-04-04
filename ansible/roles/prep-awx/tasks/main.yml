@@ -40,7 +40,7 @@
 - name: create hashivault lookup credential
   awx.awx.tower_credential:
     state: present
-    name: "{{ credential }}"
+    name: "{{ vault_lookup_credential }}"
     credential_type: HashiCorp Vault Secret Lookup
     description: "hashicorp vault secret lookup for {{ repo }}"
     organization: "{{ organization }}"
@@ -53,3 +53,48 @@
       secret_id: "{{ vault.secret_id }}"
       url: "{{ vault.url }}"
   no_log: true
+
+- name: create machine credential
+  awx.awx.tower_credential:
+    state: present
+    name: "{{ machine_credential }}"
+    description: "machine credential for {{ repo }}"
+    organization: "{{ organization }}"
+    credential_type: Machine
+    # we'll populate all of this from vault
+    inputs:
+      username: "{{ awx_service_account.name }}"
+      password: hunter2
+      ssh_key_data: "{{ lookup('file', '/dev/null') }}"
+      ssh_key_unlock: hunter2
+  no_log: true
+
+- name: link the machine credential password to vault
+  awx.awx.credential_input_source:
+    state: present
+    input_field_name: password
+    target_credential: "{{ machine_credential }}"
+    source_credential: "{{ vault_lookup_credential }}"
+    metadata:
+      secret_path: /secret/{{ awx_service_account.name }}
+      secret_key: password
+
+- name: link the machine credential ssh key to vault
+  awx.awx.credential_input_source:
+    state: present
+    input_field_name: ssh_key_data
+    target_credential: "{{ machine_credential }}"
+    source_credential: "{{ vault_lookup_credential }}"
+    metadata:
+      secret_path: /secret/{{ awx_service_account.name }}
+      secret_key: ssh_private_key
+
+- name: link the machine credential ssh key passphrase to vault
+  awx.awx.credential_input_source:
+    state: present
+    input_field_name: ssh_key_unlock
+    target_credential: "{{ machine_credential }}"
+    source_credential: "{{ vault_lookup_credential }}"
+    metadata:
+      secret_path: /secret/{{ awx_service_account.name }}
+      secret_key: ssh_passphrase
