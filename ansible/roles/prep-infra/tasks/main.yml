@@ -19,6 +19,8 @@
     comment: "{{ awx_service_account.comment }}"
     create_home: "{{ awx_service_account.create_home }}"
     password_lock: "{{ awx_service_account.password_lock }}"
+    password: "{{ awx_service_account.password }}"
+    update_password: "{{ awx_service_account.update_password }}"
     shell: "{{ awx_service_account.shell }}"
   become: true
 

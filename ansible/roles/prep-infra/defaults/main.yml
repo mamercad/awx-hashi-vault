@@ -7,8 +7,7 @@ awx_service_account:
   comment: AWX Service Account
   create_home: true
   home: /Users/awx
-  password_lock: true
   shell: /bin/bash
+  password_lock: true
   password: hunter2
-  ssh_key_data: hunter2
-  ssh_key_unlock: hunter2
+  update_password: always

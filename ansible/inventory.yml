@@ -6,9 +6,10 @@ all:
       comment: AWX Service Account
       create_home: true
       home: /Users/awx
-      password_lock: false
       shell: /bin/bash
+      password_lock: false
       password: "{{ lookup('ansible.builtin.env', 'AWX_SA_PASSWORD') }}"
+      update_password: always
       ssh_private_key: "{{ lookup('ansible.builtin.env', 'AWX_SA_SSH_PRIVATE_KEY') }}"
       ssh_public_key: "{{ lookup('ansible.builtin.env', 'AWX_SA_SSH_PUBLIC_KEY') }}"
       ssh_passphrase: "{{ lookup('ansible.builtin.env', 'AWX_SA_SSH_PASSPHRASE') }}"
