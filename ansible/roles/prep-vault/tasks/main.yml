@@ -160,3 +160,23 @@
             ssh_public_key="{{ awx_service_account.ssh_public_key }}" \
             ssh_passphrase="{{ awx_service_account.ssh_passphrase }}"
       no_log: true
+
+- name: create custom secret
+  when:
+    - custom_secret is defined
+    - custom_secret.name is defined
+    - custom_secret.secret1 is defined
+    - custom_secret.secret2 is defined
+  block:
+
+    # TODO: ansible-galaxy install 'git+https://github.com/TerryHowe/ansible-modules-hashivault.git'
+    # TODO: not sure how to do ^ in collections/requirements.yml
+    # TODO: this is all kind of broken; just use the CLI
+
+    - name: create vault secret for custom secret
+      ansible.builtin.shell:
+        cmd: |
+          vault kv put secret/{{ custom_secret.name }} \
+            secret1="{{ custom_secret.secret1 }}" \
+            secret2="{{ custom_secret.secret2 }}"
+      no_log: true

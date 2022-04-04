@@ -13,6 +13,10 @@ all:
       ssh_private_key: "{{ lookup('ansible.builtin.env', 'AWX_SA_SSH_PRIVATE_KEY') }}"
       ssh_public_key: "{{ lookup('ansible.builtin.env', 'AWX_SA_SSH_PUBLIC_KEY') }}"
       ssh_passphrase: "{{ lookup('ansible.builtin.env', 'AWX_SA_SSH_PASSPHRASE') }}"
+    custom_secret:
+      name: awx-hashi-vault
+      secret1: hunter2
+      secret2: s3kr3t1
     vault:
       api_version: v1
       cacert: ""

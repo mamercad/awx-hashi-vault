@@ -12,3 +12,5 @@ vault_lookup_credential: awx-hashi-vault-lookup
 machine_credential: awx-hashi-vault-machine
 job_template: awx-hashi-vault-jt-ping
 update_before_jts: false
+credential_type: awx-hashi-vault-ct
+custom_credential: awx-hashi-vault-c
