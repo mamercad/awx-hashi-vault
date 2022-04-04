@@ -89,7 +89,7 @@
     project: "{{ project }}"
     organization: "{{ organization }}"
     inventory: "{{ inventory }}"
-    playbook: ansible/ping.yml
+    playbook: ansible/debug.yml
     credentials:
       - "{{ machine_credential }}"
       - "{{ custom_credential }}"
