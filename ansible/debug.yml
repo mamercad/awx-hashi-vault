@@ -1,0 +1,10 @@
+---
+- name: debug
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: debug
+      ansible.builtin.debug:
+        msg: |
+          secret1: {{ secret1 }}
+          secret2: {{ secret2 }}
