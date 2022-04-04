@@ -9,13 +9,13 @@ In order to use anything here, you'll likely need administrative access to both 
 > Caveat Emptor: Nothing here should be used in Production without consulting the folks responsible for both AWX and Vault.
 
 There's an Ansible [inventory](./ansible/inventory.yml) you should modify.
-In it, you'll note two hosts, `localhost` and `jonagold`, and one group, `awx_managed`.
+In it, you'll note two hosts, `localhost` and `honeycrisp`, and one group, `awx_managed`.
 
-The host named `jonagold` is my laptop (my sandbox) which I used as the backdrop for this repository (we need a client to test the AWX Machine Credential against).
+The host named `honeycrisp` is my laptop (my sandbox) which I used as the backdrop for this repository (we need a client to test the AWX Machine Credential against).
 
-Note that the `ansible_user` is defined as `awx` for `jonagold`, the `prep-infra` role will create this user on `jonagold` (it'll act as the service account for AWX).
+Note that the `ansible_user` is defined as `awx` for `honeycrisp`, the `prep-infra` role will create this user on `honeycrisp` (it'll act as the service account for AWX).
 
-The `awx_managed` group is the `hosts` of the `prep-infra` playbook, which means that the role will only run against `jonagold` in this case.
+The `awx_managed` group is the `hosts` of the `prep-infra` playbook, which means that the role will only run against `honeycrisp` in this case.
 
 You can get a nice visual representation of an inventory like this:
 
@@ -23,10 +23,12 @@ You can get a nice visual representation of an inventory like this:
 ❯ ansible-inventory --inventory inventory.yml --graph
 @all:
   |--@awx_managed:
-  |  |--jonagold
+  |  |--honeycrisp
   |--@ungrouped:
   |  |--localhost
 ```
+
+In order to talk to AWX, these playbooks rely on the well-defined Tower environment variables; namely, `$TOWER_HOST`, `$TOWER_USERNAME`, and `$TOWER_PASSWORD`.
 
 > The operational bits of this repository live in the [ansible](ansible/) directory.
 
@@ -34,8 +36,10 @@ You can get a nice visual representation of an inventory like this:
 
 - `prep-vault` - This role ensures that Vault is good-to-go and it dumps out Vault approle authentication.
 - `prep-infra` - This role creates a user account and SSH keypair for testing purposes.
+- `prep-awx` - This role creates the AWX assets for testing purposes (Organization, Project, Credentials, etc).
 
 ## Playbooks
 
 - `prep-vault.yml` - This playbook simply calls the `prep-vault` role and runs against `localhost`.
 - `prep-infra.yml` - This playbook simply calls the `prep-infra` role and runs against `awx_managed`.
+- `prep-awx.yml` - This playbook simply calls the `prep-awx` role and runs against `localhost`.
