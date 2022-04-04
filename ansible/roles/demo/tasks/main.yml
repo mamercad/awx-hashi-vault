@@ -1,0 +1,24 @@
+---
+# tasks file for demo
+
+- name: fetch vault secret
+  ansible.builtin.command:
+    cmd: |
+      vault kv get secret/{{ custom_secret.name }}
+  no_log: true
+  register: s
+
+- name: show the vault secret
+  ansible.builtin.debug:
+    msg: |
+      {{ s.stdout }}
+
+- name: include prep-awx defaults
+  ansible.builtin.include_vars:
+    file: "{{ playbook_dir ~ '/roles/prep-awx/defaults/main.yml' }}"
+    name: prep_awx
+
+- name: launch the debug job template
+  awx.awx.tower_job_launch:
+    name: "{{ prep_awx.job_template_debug }}"
+    wait: true
