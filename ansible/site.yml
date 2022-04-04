@@ -8,7 +8,7 @@
     - name: include prep-vault role
       ansible.builtin.include_role:
         name: prep-vault
----
+
 - name: prep-infra
   hosts: awx_managed
   connection: local
@@ -18,7 +18,7 @@
     - name: include prep-infra role
       ansible.builtin.include_role:
         name: prep-infra
----
+
 - name: prep-awx
   hosts: localhost
   connection: local
