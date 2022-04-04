@@ -1,82 +1,96 @@
 ---
 # tasks file for prep-awx
 
-# - name: create organization
-#   awx.awx.tower_organization:
-#     state: present
-#     name: "{{ organization }}"
+- name: create organization
+  awx.awx.tower_organization:
+    state: present
+    name: "{{ organization }}"
 
-# - name: create project
-#   awx.awx.tower_project:
-#     state: present
-#     name: "{{ project }}"
-#     description: "project for {{ repo }}"
-#     organization: "{{ organization }}"
-#     scm_type: git
-#     scm_url: "{{ repo }}"
-#     scm_branch: "{{ branch }}"
-#     scm_update_on_launch: "{{ update_on_launch }}"
+- name: create project
+  awx.awx.tower_project:
+    state: present
+    name: "{{ project }}"
+    description: "project for {{ repo }}"
+    organization: "{{ organization }}"
+    scm_type: git
+    scm_url: "{{ repo }}"
+    scm_branch: "{{ branch }}"
+    scm_update_on_launch: "{{ update_on_launch }}"
 
-# - name: create inventory
-#   awx.awx.tower_inventory:
-#     state: present
-#     name: "{{ inventory }}"
-#     description: "inventory for {{ repo }}"
-#     organization: "{{ organization }}"
+- name: create inventory
+  awx.awx.tower_inventory:
+    state: present
+    name: "{{ inventory }}"
+    description: "inventory for {{ repo }}"
+    organization: "{{ organization }}"
 
-# - name: create inventory source
-#   awx.awx.tower_inventory_source:
-#     state: present
-#     name: "{{ inventory_src }}"
-#     inventory: "{{ inventory }}"
-#     description: "inventory source for {{ repo }}"
-#     organization: "{{ organization }}"
-#     overwrite: true
-#     source_project: "{{ project }}"
-#     source: scm
-#     source_path: ansible/inventory.yml
-#     update_on_launch: true
+- name: create inventory source
+  awx.awx.tower_inventory_source:
+    state: present
+    name: "{{ inventory_src }}"
+    inventory: "{{ inventory }}"
+    description: "inventory source for {{ repo }}"
+    organization: "{{ organization }}"
+    overwrite: true
+    source_project: "{{ project }}"
+    source: scm
+    source_path: ansible/inventory.yml
+    update_on_launch: true
 
-# - name: create hashivault lookup credential
-#   awx.awx.tower_credential:
-#     state: present
-#     name: "{{ vault_lookup_credential }}"
-#     credential_type: HashiCorp Vault Secret Lookup
-#     description: "hashicorp vault secret lookup for {{ repo }}"
-#     organization: "{{ organization }}"
-#     inputs:
-#       api_version: "{{ vault.api_version }}"
-#       cacert: "{{ vault.cacert }}"
-#       default_auth_path: "{{ vault.default_auth_path }}"
-#       namespace: "{{ vault.namespace }}"
-#       role_id: "{{ vault.role_id }}"
-#       secret_id: "{{ vault.secret_id }}"
-#       url: "{{ vault.url }}"
-#   no_log: true
+- name: create hashivault lookup credential
+  awx.awx.tower_credential:
+    state: present
+    name: "{{ vault_lookup_credential }}"
+    credential_type: HashiCorp Vault Secret Lookup
+    description: "hashicorp vault secret lookup for {{ repo }}"
+    organization: "{{ organization }}"
+    inputs:
+      api_version: "{{ vault.api_version }}"
+      cacert: "{{ vault.cacert }}"
+      default_auth_path: "{{ vault.default_auth_path }}"
+      namespace: "{{ vault.namespace }}"
+      role_id: "{{ vault.role_id }}"
+      secret_id: "{{ vault.secret_id }}"
+      url: "{{ vault.url }}"
+  no_log: true
 
-# - name: include machine credential tasks
-#   ansible.builtin.include_tasks:
-#     file: machine_credential.yml
+- name: include machine credential tasks
+  ansible.builtin.include_tasks:
+    file: machine_credential.yml
 
 - name: include custom credential tasks
   ansible.builtin.include_tasks:
     file: custom_credential.yml
 
-# - name: update the project (pull changes)
-#   when: update_before_jts | default(false, true)
-#   awx.awx.tower_project_update:
-#     name: "{{ project }}"
-#     wait: true
+- name: update the project (pull changes)
+  when: update_before_jts | default(false, true)
+  awx.awx.tower_project_update:
+    name: "{{ project }}"
+    wait: true
 
-# - name: create ping job template
-#   awx.awx.tower_job_template:
-#     state: present
-#     name: "{{ job_template }}"
-#     description: "hashicorp vault job template for {{ repo }}"
-#     project: "{{ project }}"
-#     organization: "{{ organization }}"
-#     inventory: "{{ inventory }}"
-#     playbook: ansible/ping.yml
-#     credentials:
-#       - "{{ machine_credential }}"
-#     limit: honeycrisp
+- name: create ping job template
+  awx.awx.tower_job_template:
+    state: present
+    name: "{{ job_template_ping }}"
+    description: "hashicorp vault job template for {{ repo }}"
+    project: "{{ project }}"
+    organization: "{{ organization }}"
+    inventory: "{{ inventory }}"
+    playbook: ansible/ping.yml
+    credentials:
+      - "{{ machine_credential }}"
+    limit: honeycrisp
+
+- name: create debug job template
+  awx.awx.tower_job_template:
+    state: present
+    name: "{{ job_template_debug }}"
+    description: "hashicorp vault job template for {{ repo }}"
+    project: "{{ project }}"
+    organization: "{{ organization }}"
+    inventory: "{{ inventory }}"
+    playbook: ansible/ping.yml
+    credentials:
+      - "{{ machine_credential }}"
+      - "{{ custom_credential }}"
+    limit: honeycrisp
