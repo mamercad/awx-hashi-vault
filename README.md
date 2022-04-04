@@ -50,3 +50,67 @@ You can get a nice visual representation of an inventory like this:
 - `prep-infra.yml` - This playbook simply calls the `prep-infra` role and runs against `awx_managed`.
 - `prep-awx.yml` - This playbook simply calls the `prep-awx` role and runs against `localhost`.
 - `demo.yml` - This playbook simply calls the `demo` role and runs against `localhost`.
+
+### Demo
+
+Here's the (abbreviated) output from `demo.yml` running in my homelab:
+
+```bash
+❯ ansible-playbook -i inventory.yml demo.yml
+
+PLAY [demo] **************************************************************************
+
+TASK [include demo role] *************************************************************
+
+TASK [demo : fetch vault secret] *****************************************************
+changed: [localhost]
+
+TASK [demo : show the vault secret] **************************************************
+ok: [localhost] =>
+  msg: |-
+    ===== Data =====
+    Key        Value
+    ---        -----
+    secret1    hunter2
+    secret2    s3kr3t1
+
+TASK [demo : include prep-awx defaults] **********************************************
+ok: [localhost]
+
+TASK [demo : launch the debug job template] ******************************************
+[WARNING]: You are running collection version 0.0.1-devel but connecting to AWX
+version 20.0.0
+changed: [localhost]
+
+TASK [demo : fetch job stdout] *******************************************************
+ok: [localhost]
+
+TASK [demo : show the job stdout] ****************************************************
+ok: [localhost] =>
+  stdout:
+      <SNIP>
+
+      SSH password:
+
+      PLAY [debug] *******************************************************************
+
+      TASK [Gathering Facts] *********************************************************
+      <span class="ansi32">ok: [honeycrisp]</span>
+
+      TASK [debug] *******************************************************************
+      <span class="ansi32">ok: [honeycrisp] =&gt; {</span>
+      <span class="ansi32">    &quot;msg&quot;: &quot;environment:\\n  $SECRET1: hunter2\\n  $SECRET2: s3kr3t1\\nvariables:\\n  secret1: hunter2\\n  secret2: s3kr3t1\\n&quot;</span>
+      <span class="ansi32">}</span>
+
+      PLAY RECAP *********************************************************************
+      <span class="ansi32">honeycrisp</span>                 : <span class="ansi32">ok=2   </span> changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+      <SNIP>
+
+PLAY RECAP ***************************************************************************
+localhost                  : ok=6    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+```
+
+Note that I'm dumping out the Vault secret in `demo : show the vault secret` and subsequently launching the `debug` Job Template in AWX in `demo : launch the debug job template` which is configured to use our Machine and Custom Credentials.
+
+It uses the Machine Credential to SSH to the host and the Custom Credential to populate the environment variables `$SECRET1` and `$SECRET2`, and the extra variables `secret1` and `secret2`.
