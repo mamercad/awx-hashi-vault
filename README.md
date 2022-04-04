@@ -3,13 +3,19 @@
 This repo holds my operational notes for doing [Ansible AWX](https://github.com/ansible/awx) with [HashiCorp Vault](https://vaultproject.io).
 That is, using Vault as an external Credential source for AWX (i.e., not duplicating Credentials in AWX).
 There are examples for doing the built-in Machine Credential as well as a Custom (user-defined) Credential.
-
 In order to use anything here, you'll likely need administrative access to both AWX and Vault (or at least, access to those involved in maintaining them).
+
+In order to talk to AWX, these roles and playbooks rely on the well-defined Tower environment variables; namely, `$TOWER_HOST`, `$TOWER_USERNAME`, and `$TOWER_PASSWORD`.
+
+In order to talk to Vault, these roles and playbooks leverage the `vault` CLI (the current state of Ansible and HashiCorp Vault modules is in a rather strange place).
 
 > Caveat Emptor: Nothing here should be used in Production without consulting the folks responsible for both AWX and Vault.
 
 There's an Ansible [inventory](./ansible/inventory.yml) you should modify.
 In it, you'll note two hosts, `localhost` and `honeycrisp`, and one group, `awx_managed`.
+There are also environment variables which should be set for things like the AWX service account SSH keys, and so on.
+
+Again, this repository is just my operational notes on this topic, it shouldn't be uses as-is in your work environment.
 
 The host named `honeycrisp` is my laptop (my sandbox) which I used as the backdrop for this repository (we need a client to test the AWX Machine Credential against).
 
@@ -28,7 +34,6 @@ You can get a nice visual representation of an inventory like this:
   |  |--localhost
 ```
 
-In order to talk to AWX, these playbooks rely on the well-defined Tower environment variables; namely, `$TOWER_HOST`, `$TOWER_USERNAME`, and `$TOWER_PASSWORD`.
 
 > The operational bits of this repository live in the [ansible](ansible/) directory.
 
