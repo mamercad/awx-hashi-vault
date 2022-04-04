@@ -42,9 +42,11 @@ You can get a nice visual representation of an inventory like this:
 - `prep-vault` - This role ensures that Vault is good-to-go and it dumps out Vault approle authentication.
 - `prep-infra` - This role creates a user account and SSH keypair for testing purposes.
 - `prep-awx` - This role creates the AWX assets for testing purposes (Organization, Project, Credentials, etc).
+- `demo` - This role shows the end-to-end result of this work.
 
 ## Playbooks
 
 - `prep-vault.yml` - This playbook simply calls the `prep-vault` role and runs against `localhost`.
 - `prep-infra.yml` - This playbook simply calls the `prep-infra` role and runs against `awx_managed`.
 - `prep-awx.yml` - This playbook simply calls the `prep-awx` role and runs against `localhost`.
+- `demo.yml` - This playbook simply calls the `demo` role and runs against `localhost`.
