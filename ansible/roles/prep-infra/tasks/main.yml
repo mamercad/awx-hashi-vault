@@ -23,7 +23,10 @@
   become: true
 
 - name: deploy awx ssh authorized_keys
-  when: awx_service_account.ssh_public_key_b64 is defined
+  when:
+    - awx_service_account is defined
+    - awx_service_account.name is defined
+    - awx_service_account.ssh_public_key is defined
   block:
 
     - name: ensure awx service account ~/.ssh
@@ -39,5 +42,5 @@
       ansible.posix.authorized_key:
         state: present
         user: "{{ awx_service_account.name }}"
-        key: "{{ awx_service_account.ssh_public_key_b64 | b64decode }}"
+        key: "{{ awx_service_account.ssh_public_key }}"
       become: true
