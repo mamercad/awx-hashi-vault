@@ -8,4 +8,5 @@ branch: devel
 update_on_launch: true
 inventory: awx-hashi-vault-inv
 inventory_src: awx-hashi-vault-inv-yml
-credential: awx-hashi-vault-lookup
+vault_lookup_credential: awx-hashi-vault-lookup
+machine_credential: awx-hashi-vault-machine
