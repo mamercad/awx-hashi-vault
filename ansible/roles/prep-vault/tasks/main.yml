@@ -138,16 +138,25 @@
             secret_id:
               {{ secret_id }}
 
+- name: create awx service account secret
+  when:
+    - awx_service_account is defined
+    - awx_service_account.name is defined
+    - awx_service_account.ssh_private_key is defined
+    - awx_service_account.ssh_public_key is defined
+    - awx_service_account.ssh_passphrase is defined
+  block:
 
-# TODO: ansible-galaxy install 'git+https://github.com/TerryHowe/ansible-modules-hashivault.git'
-# TODO: not sure how to do ^ in collections/requirements.yml
-# TODO: this is all kind of broken; just use the CLI
+    # TODO: ansible-galaxy install 'git+https://github.com/TerryHowe/ansible-modules-hashivault.git'
+    # TODO: not sure how to do ^ in collections/requirements.yml
+    # TODO: this is all kind of broken; just use the CLI
 
-- name: create vault secret for awx service account
-  ansible.builtin.shell:
-    cmd: |
-      vault kv put secret/{{ awx_service_account.name }} \
-        password={{ awx_service_account.password }} \
-        ssh_key_data_b64={{ awx_service_account.ssh_private_key_b64}} \
-        ssh_key_passphrase={{ awx_service_account.ssh_key_passphrase }}
-  no_log: true
+    - name: create vault secret for awx service account
+      ansible.builtin.shell:
+        cmd: |
+          vault kv put secret/{{ awx_service_account.name }} \
+            password="{{ awx_service_account.password }}" \
+            ssh_private_key="{{ awx_service_account.ssh_private_key }}" \
+            ssh_public_key="{{ awx_service_account.ssh_public_key }}" \
+            ssh_passphrase="{{ awx_service_account.ssh_passphrase }}"
+      no_log: true
